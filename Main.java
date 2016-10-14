@@ -68,23 +68,61 @@ public class Main {
 
         /* Do not alter the code above for your submission. */
         /* Write your code below. */
-     //TEST CODE, MAKES A CRAIG CRITTER AND ALGAE CRITTER AND DISPLAYS THE WORLD
-        System.out.println("GLHF");
-        try {
-        	Critter.makeCritter("Craig");
-        }
-        catch (InvalidCritterException e) {
-        	System.out.println(e.toString());
-        }
-        try {
-        	Critter.makeCritter("Algae");
-        }
-        catch (InvalidCritterException e) {
-        	System.out.println(e.toString());
-        }
-        Critter.displayWorld();
+        
+        try {		//TODO : Remove this once make is implemented in controller()
+			for (int i = 0; i < 100; i++) {
+				Critter.makeCritter("Algae");
+				if (i < 25) {
+					Critter.makeCritter("Craig");
+				}
+			}
+		}
+		catch(InvalidCritterException e) {
+			System.out.println(e.toString());
+		}
+        
+        controller(kb);
+        
         /* Write your code above */
         System.out.flush();
 
+    }
+    
+    /**
+     * Controls the program
+     * Implements a variety of commands that the user can input
+     * Method returns when user enters 'quit'
+     * @param kb : Keyboard input, allows user to enter commands with keyboard
+     */
+    public static void controller(Scanner kb) {
+    	boolean run = true;
+    	
+    	while (run) {
+    	//Get input
+    		System.out.print("critter> ");
+    		String input = kb.nextLine();
+    	//Determine what the user input
+    		if (input.equals("quit")) { 
+    			run = false;
+    		}
+    		else if (input.equals("show")) {
+    			Critter.displayWorld();
+    		}
+    		else if (input.equals("step")) {		//TODO: Implement STAGE2 count component
+    			Critter.worldTimeStep();
+    		}
+    		else if (input.equals("make")) {		//TODO: Implement STAGE2 functionality
+    			
+    		}
+    		else if (input.equals("seed")) {		//TODO: Implement STAGE2 functionality
+    			
+    		}
+    		else if (input.equals("stats")) {		//TODO: Implement STAGE3 functionality
+    			
+    		}
+    		else {			
+    			System.out.println("Command not found. Try again.");
+    		}
+    	}
     }
 }

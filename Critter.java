@@ -88,7 +88,7 @@ public abstract class Critter {
 		Critter critter;
 	//Create the critter
 		try {
-			Class critter_class = Class.forName("assignment4." + critter_class_name);
+			Class critter_class = Class.forName(myPackage + "." + critter_class_name);
 			critter = (Critter) critter_class.newInstance();
 		}
 		catch (ClassNotFoundException e1) {		//Class.forName() exception
