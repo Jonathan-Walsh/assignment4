@@ -68,9 +68,21 @@ public class Main {
 
         /* Do not alter the code above for your submission. */
         /* Write your code below. */
-        
+     //TEST CODE, MAKES A CRAIG CRITTER AND ALGAE CRITTER AND DISPLAYS THE WORLD
         System.out.println("GLHF");
-        
+        try {
+        	Critter.makeCritter("Craig");
+        }
+        catch (InvalidCritterException e) {
+        	System.out.println(e.toString());
+        }
+        try {
+        	Critter.makeCritter("Algae");
+        }
+        catch (InvalidCritterException e) {
+        	System.out.println(e.toString());
+        }
+        Critter.displayWorld();
         /* Write your code above */
         System.out.flush();
 

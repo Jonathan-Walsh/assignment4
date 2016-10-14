@@ -1,3 +1,4 @@
+/* CRITTERS <Critter.java>
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
  * Jonathan Walsh
@@ -49,11 +50,22 @@ public abstract class Critter {
 	private int x_coord;
 	private int y_coord;
 	
+	//Index is direction, value is amount to move in either x or y direction
+	private int[] x_directions = {1,1,0,-1,-1,-1,0,1};
+	private int[] y_directions = {0,-1,-1,-1,0,1,1,1};
+			
 	protected final void walk(int direction) {
+	//Update location
+		x_coord += x_directions[direction];
+		x_coord %= Params.world_width;
+		y_coord += y_directions[direction];
+		y_coord %= Params.world_height;
+	//Update energy
+		energy -= Params.walk_energy_cost;
 	}
 	
 	protected final void run(int direction) {
-		
+		//STAGE 2: Need to do
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
@@ -191,7 +203,49 @@ public abstract class Critter {
 	}
 	
 	public static void worldTimeStep() {
+		for (Critter c: population) {
+			c.doTimeStep();
+		}
+		//STAGE 2: Implement code for encounter resolution
+		//STAGE 2: Spawn offspring and add to population
+		//STAGE 2: delete all dead critters
 	}
 	
-	public static void displayWorld() {}
+	public static void displayWorld() {
+	//First row
+		System.out.print("+");
+		for (int i = 0; i < Params.world_width; i++) {
+			System.out.print("-");
+		}
+		System.out.println("+");
+	//Grid
+		for (int row = 0; row < Params.world_height; row++) {
+			System.out.print("|");
+			List<Critter> crittersInRow = new java.util.ArrayList<Critter>();
+			for (Critter c: population) {
+				if (c.y_coord == row) {
+					crittersInRow.add(c);
+				}
+			}
+			for (int col = 0; col < Params.world_width; col++) {
+				boolean critterExists = false;			//Becomes true if we find critter in the location
+				for (Critter c2: crittersInRow) {
+					if (c2.x_coord == col) {
+						System.out.print(c2.toString());
+						critterExists = true;
+					}
+				}
+				if (!critterExists) {
+					System.out.print(" ");
+				}
+			}
+			System.out.println("|");
+		}
+	//Last row
+		System.out.print("+");
+		for (int i = 0; i < Params.world_width; i++) {
+			System.out.print("-");
+		}
+		System.out.println("+");
+	}
 }
