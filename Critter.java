@@ -65,10 +65,36 @@ public abstract class Critter {
 	}
 	
 	protected final void run(int direction) {
-		//STAGE 2: Need to do
+	//Update location (*2 because we move twice in same direction)
+		x_coord += (x_directions[direction] * 2);
+		x_coord %= Params.world_width;
+		y_coord += (y_directions[direction] * 2);
+		y_coord %= Params.world_height;
+	//Update energy
+		energy -= Params.run_energy_cost;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
+	//Return immediately if parent does not have enough energy to reproduce
+		if (energy < Params.min_reproduce_energy) {
+			return;
+		}
+	//If parent does have enough energy
+		//Divide energy between offspring and parent
+		offspring.energy = this.energy / 2;
+		if (this.energy % 2 == 0) {
+			this.energy = this.energy / 2;
+		}
+		else {								//Make sure to round up (only causes problem when energy is odd)
+			this.energy = (this.energy / 2) + 1;
+		}
+		//Set location of offspring
+		offspring.x_coord = this.x_coord + x_directions[direction];
+		offspring.x_coord %= Params.world_width;
+		offspring.y_coord = this.y_coord + y_directions[direction];
+		offspring.y_coord %= Params.world_height;
+	//Add to babies
+		babies.add(offspring);
 	}
 
 	public abstract void doTimeStep();
@@ -203,12 +229,23 @@ public abstract class Critter {
 	}
 	
 	public static void worldTimeStep() {
+	//Time step all critters
 		for (Critter c: population) {
 			c.doTimeStep();
+			c.energy -= Params.rest_energy_cost;
 		}
-		//STAGE 2: Implement code for encounter resolution
-		//STAGE 2: Spawn offspring and add to population
-		//STAGE 2: delete all dead critters
+	//TODO: STAGE 2: Implement code for encounter resolution
+	//Spawn offspring and add to population
+		for (Critter b: babies) {
+			population.add(b);
+		}
+		babies = new java.util.ArrayList<Critter>();			//Refresh babies list
+	//Delete all dead critters
+		for (Critter c2: population) {
+			if (c2.energy <= 0) {
+				population.remove(c2);
+			}
+		}
 	}
 	
 	public static void displayWorld() {
