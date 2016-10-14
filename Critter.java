@@ -1,9 +1,8 @@
-/* CRITTERS Critter.java
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
+ * Jonathan Walsh
+ * jlw4699
+ * 16450
  * <Student2 Name>
  * <Student2 EID>
  * <Student2 5-digit Unique No.>
@@ -74,6 +73,27 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+		Critter critter;
+	//Create the critter
+		try {
+			Class critter_class = Class.forName("assignment4." + critter_class_name);
+			critter = (Critter) critter_class.newInstance();
+		}
+		catch (ClassNotFoundException e1) {		//Class.forName() exception
+			throw new InvalidCritterException(critter_class_name);
+		}
+		catch (IllegalAccessException e2) {		//Class.newInstance() exception
+			throw new InvalidCritterException(critter_class_name);
+		}
+		catch (InstantiationException e3) { 	//Class.newInstance() exception
+			throw new InvalidCritterException(critter_class_name);
+		}
+	//Initialize the location/energy of the critter
+		critter.energy = Params.start_energy;
+		critter.x_coord = getRandomInt(Params.world_width);
+		critter.y_coord = getRandomInt(Params.world_height);
+	//Add the critter to the world
+		population.add(critter);
 	}
 	
 	/**
