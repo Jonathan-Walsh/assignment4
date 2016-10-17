@@ -12,6 +12,7 @@
  */
 package assignment4; // cannot be in default package
 import java.util.Scanner;
+
 import java.io.*;
 
 
@@ -115,22 +116,118 @@ public class Main {
     		else if (input.equals("show")) {
     			Critter.displayWorld();
     		}
-    		else if (input.equals("step")) {		//TODO: Implement STAGE2 count component
-    			Critter.worldTimeStep();
+    		else if (inputs[0].equals("step")) {		
+    			stepCommand(inputs);
     		}
-    		else if (input.equals("make")) {		//TODO: Implement STAGE2 functionality
-    			
+    		else if (inputs[0].equals("make")) {	
+    			makeCommand(inputs);
     		}
-    		else if (input.equals("seed")) {		//TODO: Implement STAGE2 functionality
-    			
+    		else if (inputs[0].equals("seed")) {	
+    			seedCommand(inputs);
     		}
     		else if (inputs[0].equals("stats") && inputs.length == 2) {		//TODO: Implement STAGE3 functionality
-    			java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
-    			Critter.runStats(instances);
+    			statsCommand(inputs);
     		}
     		else {			
     			System.out.println("Command not found. Try again.");
     		}
     	}
     }
+    
+    /** Implements the actions performed when the user enters "step ~~~"
+     * Returns nothing, just prints to the console
+     * @param inputs : An array of the Strings input the user, should be ["step",<count>]
+     */
+    public static void stepCommand(String[] inputs) {
+    //If user just wants to perform one time step
+    	if (inputs.length == 1) {
+    		Critter.worldTimeStep();
+    	}
+    //If the user specifies number of time steps
+    	else if (inputs.length == 2) {
+    		try {
+    			int numSteps = Integer.parseInt(inputs[1]);
+    			for (int i = 0; i < numSteps; i++) {
+    				Critter.worldTimeStep();
+    			}
+    		}
+    		catch (NumberFormatException e) {
+    			System.out.println("Not an integer. Try again.");
+    		}
+    	}
+    //If the user gives too many inputs
+    	else {
+    		System.out.println("Incorrect input. Try again.");
+    	}
+    }
+    
+    /** Implements the actions performed when the user enters "make ~~~ ~~~"
+     * Returns nothing, just prints to the console
+     * @param inputs : An array of the Strings input the user, should be ["make",<Critter type>,<count>]
+     */
+    public static void makeCommand(String[] inputs) {
+    	//If user just gives the name of the Critter
+		if (inputs.length == 2) {
+			try {
+				Critter.makeCritter(inputs[1]);
+			}
+			catch (InvalidCritterException e1) {
+				System.out.println("Not a type of critter. Try again.");
+			}
+		}
+	//If user just gives the name and number of Critter
+		else if (inputs.length == 3) {
+			try {
+				int numCritters = Integer.parseInt(inputs[2]);
+				for (int i = 0; i < numCritters; i++) {
+					Critter.makeCritter(inputs[1]);
+				}
+			}
+			catch (InvalidCritterException e2) {
+				System.out.println("Not a type of critter. Try again.");
+			}
+			catch (NumberFormatException e3) {
+				System.out.println("Not an integer. Try again");
+			}
+		}
+	//If user gives too many inputs
+		else {
+			System.out.println("Make command used incorrectly. Try again.");
+		}
+    }
+    
+    /** Implements the actions performed when the user enters "seed ~~~"
+     * Returns nothing, just prints to the console
+     * @param inputs : An array of the Strings input the user, should be ["seed",<seed number>]
+     */
+    public static void seedCommand(String[] inputs) {
+    	if (inputs.length == 2) {
+			try {
+				long numSeed = Long.parseLong(inputs[1]);
+				Critter.setSeed(numSeed);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Not an integer. Try again.");
+			}
+		}
+		else {
+			System.out.println("Invalid input. Try again.");
+		}
+    }
+    
+    /** Implements the actions performed when the user enters "stats ~~~"
+     * Returns nothing, just prints to the console
+     * @param inputs : An array of the Strings input the user, should be ["stats",<Critter type>]
+     */
+    public static void statsCommand(String[] inputs) {
+    	try {
+    		java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
+    		//TODO: Make this work so we can call Craig.runStats (see PDF/Piazza)
+    		Critter.runStats(instances);
+    	}
+    	catch (InvalidCritterException e) {
+    		System.out.println("Invalid critter type. Try again");
+    	}
+    }
+    
 }

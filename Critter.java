@@ -353,7 +353,9 @@ public abstract class Critter {
 				boolean critterExists = false;			//Becomes true if we find critter in the location
 				for (Critter c2: crittersInRow) {
 					if (c2.x_coord == col) {
-						System.out.print(c2.toString());
+						if (!critterExists) {			//Solves problem of more than 1 critter in location after adding but before stepping
+							System.out.print(c2.toString());
+						}
 						critterExists = true;
 					}
 				}
