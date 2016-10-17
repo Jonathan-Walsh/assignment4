@@ -81,7 +81,11 @@ public class Main {
 			System.out.println(e.toString());
 		}
         
-        controller(kb);
+        try {
+			controller(kb);
+		} catch (InvalidCritterException e) {
+			System.out.println(e.toString());
+		}
         
         /* Write your code above */
         System.out.flush();
@@ -93,14 +97,17 @@ public class Main {
      * Implements a variety of commands that the user can input
      * Method returns when user enters 'quit'
      * @param kb : Keyboard input, allows user to enter commands with keyboard
+     * @throws InvalidCritterException 
+     * 
      */
-    public static void controller(Scanner kb) {
+    public static void controller(Scanner kb) throws InvalidCritterException {
     	boolean run = true;
     	
     	while (run) {
     	//Get input
     		System.out.print("critter> ");
     		String input = kb.nextLine();
+    		String[] inputs = input.split(" ");
     	//Determine what the user input
     		if (input.equals("quit")) { 
     			run = false;
@@ -117,8 +124,9 @@ public class Main {
     		else if (input.equals("seed")) {		//TODO: Implement STAGE2 functionality
     			
     		}
-    		else if (input.equals("stats")) {		//TODO: Implement STAGE3 functionality
-    			
+    		else if (inputs[0].equals("stats") && inputs.length == 2) {		//TODO: Implement STAGE3 functionality
+    			java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
+    			Critter.runStats(instances);
     		}
     		else {			
     			System.out.println("Command not found. Try again.");

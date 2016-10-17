@@ -53,25 +53,36 @@ public abstract class Critter {
 	//Index is direction, value is amount to move in either x or y direction
 	private int[] x_directions = {1,1,0,-1,-1,-1,0,1};
 	private int[] y_directions = {0,-1,-1,-1,0,1,1,1};
-			
+	
+	//Used to determine if a critter has already moved during a time step
+	private boolean hasMoved = false; 
+	
 	protected final void walk(int direction) {
 	//Update location
-		x_coord += x_directions[direction];
-		x_coord %= Params.world_width;
-		y_coord += y_directions[direction];
-		y_coord %= Params.world_height;
+		if (!hasMoved) {
+			x_coord += x_directions[direction];
+			x_coord %= Params.world_width;
+			y_coord += y_directions[direction];
+			y_coord %= Params.world_height;
+		}
 	//Update energy
 		energy -= Params.walk_energy_cost;
+	//Update hasMoved
+		hasMoved = true;
 	}
 	
 	protected final void run(int direction) {
 	//Update location (*2 because we move twice in same direction)
-		x_coord += (x_directions[direction] * 2);
-		x_coord %= Params.world_width;
-		y_coord += (y_directions[direction] * 2);
-		y_coord %= Params.world_height;
+		if (!hasMoved) {
+			x_coord += (x_directions[direction] * 2);
+			x_coord %= Params.world_width;
+			y_coord += (y_directions[direction] * 2);
+			y_coord %= Params.world_height;
+		}
 	//Update energy
 		energy -= Params.run_energy_cost;
+	//Update hasMoved
+		hasMoved = true;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
@@ -114,7 +125,7 @@ public abstract class Critter {
 		Critter critter;
 	//Create the critter
 		try {
-			Class critter_class = Class.forName(myPackage + "." + critter_class_name);
+			Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
 			critter = (Critter) critter_class.newInstance();
 		}
 		catch (ClassNotFoundException e1) {		//Class.forName() exception
@@ -142,7 +153,27 @@ public abstract class Critter {
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		List<Critter> result = new java.util.ArrayList<Critter>();
-	
+		Critter critter;
+	//Get the correct critter class and throw exception if the class doesn't exist
+		try {
+			Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
+			critter = (Critter) critter_class.newInstance();
+		}
+		catch (ClassNotFoundException e1){
+			throw new InvalidCritterException(critter_class_name);
+		}
+		catch (IllegalAccessException e2) {		//Class.newInstance() exception
+			throw new InvalidCritterException(critter_class_name);
+		}
+		catch (InstantiationException e3) { 	//Class.newInstance() exception
+			throw new InvalidCritterException(critter_class_name);
+		}
+	//Make the list of critters of type critter_class_name
+		for (Critter c: population) {
+			if (c.getClass() == critter.getClass()) {
+				result.add(c);
+			}
+		}
 		return result;
 	}
 	
@@ -232,14 +263,18 @@ public abstract class Critter {
 	//Time step all critters
 		for (Critter c: population) {
 			c.doTimeStep();
-			c.energy -= Params.rest_energy_cost;
+		//Reset hasMoved after time step
+			c.hasMoved = false;
 		}
 	//TODO: STAGE 2: Implement code for encounter resolution
-	//Spawn offspring and add to population
-		for (Critter b: babies) {
-			population.add(b);
+	
+	//Update rest energy
+		for (Critter c2: population) {
+			c2.energy -= Params.rest_energy_cost;
 		}
-		babies = new java.util.ArrayList<Critter>();			//Refresh babies list
+	//Spawn offspring and add to population
+		population.addAll(babies);
+		babies.clear();
 	//Delete all dead critters
 		for (Critter c2: population) {
 			if (c2.energy <= 0) {
