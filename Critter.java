@@ -10,8 +10,8 @@
  * Slip days used: <0>
  * Fall 2016
  */
+//package assignment4;
 package assignment4;
-
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -65,36 +65,22 @@ public abstract class Critter {
 	}
 	
 	protected final void run(int direction) {
-	//Update location (*2 because we move twice in same direction)
-		x_coord += (x_directions[direction] * 2);
-		x_coord %= Params.world_width;
-		y_coord += (y_directions[direction] * 2);
-		y_coord %= Params.world_height;
-	//Update energy
-		energy -= Params.run_energy_cost;
+		//STAGE 2: Need to do
+		walk(direction);
+		walk(direction);
 	}
 	
-	protected final void reproduce(Critter offspring, int direction) {
-	//Return immediately if parent does not have enough energy to reproduce
-		if (energy < Params.min_reproduce_energy) {
+	protected final void reproduce(Critter offspring, int direction) throws InvalidCritterException {
+		if(this.energy<Params.min_reproduce_energy)
 			return;
-		}
-	//If parent does have enough energy
-		//Divide energy between offspring and parent
-		offspring.energy = this.energy / 2;
-		if (this.energy % 2 == 0) {
-			this.energy = this.energy / 2;
-		}
-		else {								//Make sure to round up (only causes problem when energy is odd)
-			this.energy = (this.energy / 2) + 1;
-		}
-		//Set location of offspring
-		offspring.x_coord = this.x_coord + x_directions[direction];
-		offspring.x_coord %= Params.world_width;
-		offspring.y_coord = this.y_coord + y_directions[direction];
-		offspring.y_coord %= Params.world_height;
-	//Add to babies
-		babies.add(offspring);
+		Critter c = this.makeCritter(this.toString());
+		c.energy=(this.energy/2);
+		this.energy/=2;
+		c.x_coord=this.x_coord;
+		c.y_coord=this.y_coord;
+		c.walk(direction);
+		
+		
 	}
 
 	public abstract void doTimeStep();
@@ -108,13 +94,14 @@ public abstract class Critter {
 	 * upper. For example, if craig is supplied instead of Craig, an error is thrown instead of
 	 * an Exception.)
 	 * @param critter_class_name
+	 * @return 
 	 * @throws InvalidCritterException
 	 */
-	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+	public static Critter makeCritter(String critter_class_name) throws InvalidCritterException {
 		Critter critter;
-	//Create the critter
+	//Create the critter	
 		try {
-			Class critter_class = Class.forName(myPackage + "." + critter_class_name);
+			Class critter_class = Class.forName("assignment4." + critter_class_name);
 			critter = (Critter) critter_class.newInstance();
 		}
 		catch (ClassNotFoundException e1) {		//Class.forName() exception
@@ -132,6 +119,7 @@ public abstract class Critter {
 		critter.y_coord = getRandomInt(Params.world_height);
 	//Add the critter to the world
 		population.add(critter);
+		return critter;
 	}
 	
 	/**
@@ -229,23 +217,60 @@ public abstract class Critter {
 	}
 	
 	public static void worldTimeStep() {
-	//Time step all critters
 		for (Critter c: population) {
 			c.doTimeStep();
-			c.energy -= Params.rest_energy_cost;
 		}
-	//TODO: STAGE 2: Implement code for encounter resolution
-	//Spawn offspring and add to population
-		for (Critter b: babies) {
-			population.add(b);
-		}
-		babies = new java.util.ArrayList<Critter>();			//Refresh babies list
-	//Delete all dead critters
-		for (Critter c2: population) {
-			if (c2.energy <= 0) {
-				population.remove(c2);
+		//STAGE 2: Implement code for encounter resolution
+		for(Critter c: population)
+		{
+			//int currentXCoord = c.x_coord;
+			//int currentYCoord = c.y_coord;
+			for(Critter a: population)
+			{
+				if((!c.equals(a))&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
+				{
+					int cFight=0;
+					int aFight=0;
+					if(c.fight(a.toString()))
+					{
+						cFight = getRandomInt(100);
+						cFight++;
+					}
+					if(a.fight(c.toString()))
+					{
+						aFight =getRandomInt(100);
+						aFight++;
+					}
+					if(cFight>aFight)
+					{
+						c.energy+=(a.energy/2);
+						population.remove(a);
+					}
+					else if(aFight>cFight)
+					{
+						a.energy+=(c.energy/2);
+						population.remove(c);
+					}
+					else
+					{
+						if(aFight>50)
+						{
+							a.energy+=(c.energy/2);
+							population.remove(c);
+						}
+						else
+						{
+							c.energy+=(a.energy);
+							population.remove(a);
+						}
+						
+					}
+				}
 			}
 		}
+		//STAGE 2: Spawn offspring and add to population
+		
+		//STAGE 2: delete all dead critters
 	}
 	
 	public static void displayWorld() {
