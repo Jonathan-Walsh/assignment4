@@ -23,7 +23,7 @@ public class Craig extends Critter {
 
 	@Override
 	public void doTimeStep() {
-		/* take one step forward */
+	/* take one step forward */
 		walk(dir);
 		
 		if (getEnergy() > 150) {

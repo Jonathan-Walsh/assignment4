@@ -10,8 +10,8 @@
  * Slip days used: <0>
  * Fall 2016
  */
+//package assignment4;
 package assignment4;
-
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -119,11 +119,12 @@ public abstract class Critter {
 	 * upper. For example, if craig is supplied instead of Craig, an error is thrown instead of
 	 * an Exception.)
 	 * @param critter_class_name
+	 * @return 
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		Critter critter;
-	//Create the critter
+	//Create the critter	
 		try {
 			Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
 			critter = (Critter) critter_class.newInstance();
@@ -260,21 +261,70 @@ public abstract class Critter {
 	}
 	
 	public static void worldTimeStep() {
-	//Time step all critters
+		
+	//Do time step for all critters
 		for (Critter c: population) {
 			c.doTimeStep();
 		//Reset hasMoved after time step
 			c.hasMoved = false;
 		}
-	//TODO: STAGE 2: Implement code for encounter resolution
-	
+		
+	//Resolve encounters
+		for(Critter c: population){
+			//int currentXCoord = c.x_coord;
+			//int currentYCoord = c.y_coord;
+			for(Critter a: population) {
+				if((!c.equals(a))&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
+				{
+					int cFight=0;
+					int aFight=0;
+					if(c.fight(a.toString()))
+					{
+						cFight = getRandomInt(100);
+						cFight++;
+					}
+					if(a.fight(c.toString()))
+					{
+						aFight =getRandomInt(100);
+						aFight++;
+					}
+					if(cFight>aFight)
+					{
+						c.energy+=(a.energy/2);
+						population.remove(a);
+					}
+					else if(aFight>cFight)
+					{
+						a.energy+=(c.energy/2);
+						population.remove(c);
+					}
+					else
+					{
+						if(aFight>50)
+						{
+							a.energy+=(c.energy/2);
+							population.remove(c);
+						}
+						else
+						{
+							c.energy+=(a.energy);
+							population.remove(a);
+						}
+						
+					}
+				}
+			}
+		}
+		
 	//Update rest energy
 		for (Critter c2: population) {
 			c2.energy -= Params.rest_energy_cost;
 		}
+		
 	//Spawn offspring and add to population
 		population.addAll(babies);
 		babies.clear();
+		
 	//Delete all dead critters
 		for (Critter c2: population) {
 			if (c2.energy <= 0) {
