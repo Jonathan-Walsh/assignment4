@@ -22,8 +22,9 @@ public class Craig extends Critter {
 	public boolean fight(String not_used) { return true; }
 
 	@Override
-	public void doTimeStep() {
-		/* take one step forward */
+	public void doTimeStep()
+	{
+	/* take one step forward */
 		walk(dir);
 		
 		if (getEnergy() > 150) {
@@ -38,7 +39,12 @@ public class Craig extends Critter {
 			child.genes[g] -= 1;
 			g = Critter.getRandomInt(8);
 			child.genes[g] += 1;
-			reproduce(child, Critter.getRandomInt(8));
+			try {
+				reproduce(child, Critter.getRandomInt(8));
+			} catch (InvalidCritterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		/* pick a new direction based on our genes */
