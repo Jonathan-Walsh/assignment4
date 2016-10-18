@@ -354,6 +354,14 @@ public abstract class Critter {
 			if(it3.next().energy<=0)
 				it3.remove();
 		}
+	//Create new algae
+		for (int i = 0; i < Params.refresh_algae_count; i++) {
+			try {
+				makeCritter("Algae");
+			} catch (InvalidCritterException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static void displayWorld() {

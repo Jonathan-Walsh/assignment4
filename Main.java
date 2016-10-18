@@ -70,23 +70,8 @@ public class Main {
         /* Do not alter the code above for your submission. */
         /* Write your code below. */
         
-        try {		//TODO : Remove this once make is implemented in controller()
-			for (int i = 0; i < 100; i++) {
-				Critter.makeCritter("Algae");
-				if (i < 25) {
-					Critter.makeCritter("Craig");
-				}
-			}
-		}
-		catch(InvalidCritterException e) {
-			System.out.println(e.toString());
-		}
-        
-        try {
-			controller(kb);
-		} catch (InvalidCritterException e) {
-			System.out.println(e.toString());
-		}
+       
+        controller(kb);
         
         /* Write your code above */
         System.out.flush();
@@ -101,7 +86,7 @@ public class Main {
      * @throws InvalidCritterException 
      * 
      */
-    public static void controller(Scanner kb) throws InvalidCritterException {
+    public static void controller(Scanner kb) {
     	boolean run = true;
     	
     	while (run) {
@@ -117,19 +102,19 @@ public class Main {
     			Critter.displayWorld();
     		}
     		else if (inputs[0].equals("step")) {		
-    			stepCommand(inputs);
+    			stepCommand(input, inputs);
     		}
     		else if (inputs[0].equals("make")) {	
-    			makeCommand(inputs);
+    			makeCommand(input, inputs);
     		}
     		else if (inputs[0].equals("seed")) {	
-    			seedCommand(inputs);
+    			seedCommand(input, inputs);
     		}
     		else if (inputs[0].equals("stats") && inputs.length == 2) {		//TODO: Implement STAGE3 functionality
-    			statsCommand(inputs);
+    			statsCommand(input, inputs);
     		}
     		else {			
-    			System.out.println("Command not found. Try again.");
+    			System.out.println("invalid command: " + input);
     		}
     	}
     }
@@ -138,7 +123,7 @@ public class Main {
      * Returns nothing, just prints to the console
      * @param inputs : An array of the Strings input the user, should be ["step",<count>]
      */
-    public static void stepCommand(String[] inputs) {
+    public static void stepCommand(String input, String[] inputs) {
     //If user just wants to perform one time step
     	if (inputs.length == 1) {
     		Critter.worldTimeStep();
@@ -152,12 +137,12 @@ public class Main {
     			}
     		}
     		catch (NumberFormatException e) {
-    			System.out.println("Not an integer. Try again.");
+    			System.out.println("error processing: " + input);
     		}
     	}
     //If the user gives too many inputs
     	else {
-    		System.out.println("Incorrect input. Try again.");
+    		System.out.println("error processing: " + input);
     	}
     }
     
@@ -165,14 +150,14 @@ public class Main {
      * Returns nothing, just prints to the console
      * @param inputs : An array of the Strings input the user, should be ["make",<Critter type>,<count>]
      */
-    public static void makeCommand(String[] inputs) {
+    public static void makeCommand(String input, String[] inputs) {
     	//If user just gives the name of the Critter
 		if (inputs.length == 2) {
 			try {
 				Critter.makeCritter(inputs[1]);
 			}
 			catch (InvalidCritterException e1) {
-				System.out.println("Not a type of critter. Try again.");
+				System.out.println("error processing: " + input);
 			}
 		}
 	//If user just gives the name and number of Critter
@@ -184,15 +169,15 @@ public class Main {
 				}
 			}
 			catch (InvalidCritterException e2) {
-				System.out.println("Not a type of critter. Try again.");
+				System.out.println("error processing: " + input);
 			}
 			catch (NumberFormatException e3) {
-				System.out.println("Not an integer. Try again");
+				System.out.println("error processing: " + input);
 			}
 		}
 	//If user gives too many inputs
 		else {
-			System.out.println("Make command used incorrectly. Try again.");
+			System.out.println("error processing: " + input);
 		}
     }
     
@@ -200,18 +185,18 @@ public class Main {
      * Returns nothing, just prints to the console
      * @param inputs : An array of the Strings input the user, should be ["seed",<seed number>]
      */
-    public static void seedCommand(String[] inputs) {
+    public static void seedCommand(String input, String[] inputs) {
     	if (inputs.length == 2) {
 			try {
 				long numSeed = Long.parseLong(inputs[1]);
 				Critter.setSeed(numSeed);
 			}
 			catch (NumberFormatException e) {
-				System.out.println("Not an integer. Try again.");
+				System.out.println("error processing: " + input);
 			}
 		}
 		else {
-			System.out.println("Invalid input. Try again.");
+			System.out.println("error processing: " + input);
 		}
     }
     
@@ -219,14 +204,14 @@ public class Main {
      * Returns nothing, just prints to the console
      * @param inputs : An array of the Strings input the user, should be ["stats",<Critter type>]
      */
-    public static void statsCommand(String[] inputs) {
+    public static void statsCommand(String input, String[] inputs) {
     	try {
     		java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
     		//TODO: Make this work so we can call Craig.runStats (see PDF/Piazza)
     		Critter.runStats(instances);
     	}
     	catch (InvalidCritterException e) {
-    		System.out.println("Invalid critter type. Try again");
+    		System.out.println("error processing: " + input);
     	}
     }
     
