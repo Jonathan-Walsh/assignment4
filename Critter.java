@@ -12,6 +12,7 @@
  */
 //package assignment4;
 package assignment4;
+import java.util.Iterator;
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -270,12 +271,24 @@ public abstract class Critter {
 		}
 		
 	//Resolve encounters
-		for(Critter c: population){
-			//int currentXCoord = c.x_coord;
-			//int currentYCoord = c.y_coord;
-			for(Critter a: population) {
+		Iterator<Critter> it1 = population.iterator();
+		boolean testFlag = false;
+		boolean it2Next = true;
+		while(it1.hasNext()&&it2Next)
+		{
+			if(testFlag)
+				System.out.println("cool");
+			Critter c = it1.next();
+			Iterator<Critter> it2 = population.iterator();
+			boolean alive = true;
+			while(it2.hasNext()&&alive) 
+			{	
+				Critter a =it2.next();
 				if((!c.equals(a))&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
 				{
+					System.out.println("Theres been an encounter");
+					testFlag=true;
+					alive=false;
 					int cFight=0;
 					int aFight=0;
 					if(c.fight(a.toString()))
@@ -291,28 +304,32 @@ public abstract class Critter {
 					if(cFight>aFight)
 					{
 						c.energy+=(a.energy/2);
-						population.remove(a);
+						//it2.remove();
+						a.energy=0;
 					}
 					else if(aFight>cFight)
 					{
 						a.energy+=(c.energy/2);
-						population.remove(c);
+						//it1.remove()
+						c.energy=0;
 					}
 					else
 					{
 						if(aFight>50)
 						{
 							a.energy+=(c.energy/2);
-							population.remove(c);
+							//it1.remove();
+							c.energy=0;
 						}
 						else
 						{
 							c.energy+=(a.energy);
-							population.remove(a);
-						}
-						
+							//it2.remove();
+							a.energy=0;
+						}	
 					}
 				}
+				it2Next=it2.hasNext();
 			}
 		}
 		
@@ -326,10 +343,16 @@ public abstract class Critter {
 		babies.clear();
 		
 	//Delete all dead critters
-		for (Critter c2: population) {
-			if (c2.energy <= 0) {
-				population.remove(c2);
-			}
+	//	for (Critter c2: population) {
+	//		if (c2.energy <= 0) {
+	//			population.remove(c2);
+	//		}
+	//	}
+		Iterator<Critter> it3 = population.iterator();
+		while(it3.hasNext())
+		{
+			if(it3.next().energy<=0)
+				it3.remove();
 		}
 	}
 	
