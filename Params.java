@@ -18,8 +18,8 @@ package assignment4;
  */
 
 public class Params {
-	public final static int world_width = 5;
-	public final static int world_height = 5;
+	public final static int world_width = 30;
+	public final static int world_height = 30;
 	public final static int walk_energy_cost = 2;
 	public final static int run_energy_cost = 5;
 	public final static int rest_energy_cost = 0;
