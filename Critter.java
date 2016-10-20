@@ -62,8 +62,10 @@ public abstract class Critter {
 	//Update location
 		if (!hasMoved) {
 			x_coord += x_directions[direction];
+			x_coord += Params.world_width;
 			x_coord %= Params.world_width;
 			y_coord += y_directions[direction];
+			y_coord += Params.world_height;
 			y_coord %= Params.world_height;
 		}
 	//Update energy
@@ -76,8 +78,10 @@ public abstract class Critter {
 	//Update location (*2 because we move twice in same direction)
 		if (!hasMoved) {
 			x_coord += (x_directions[direction] * 2);
+			x_coord += Params.world_width;
 			x_coord %= Params.world_width;
 			y_coord += (y_directions[direction] * 2);
+			y_coord += Params.world_height;
 			y_coord %= Params.world_height;
 		}
 	//Update energy
@@ -102,8 +106,10 @@ public abstract class Critter {
 		}
 		//Set location of offspring
 		offspring.x_coord = this.x_coord + x_directions[direction];
+		offspring.x_coord += Params.world_width;
 		offspring.x_coord %= Params.world_width;
 		offspring.y_coord = this.y_coord + y_directions[direction];
+		offspring.y_coord += Params.world_height;
 		offspring.y_coord %= Params.world_height;
 	//Add to babies
 		babies.add(offspring);
@@ -272,13 +278,8 @@ public abstract class Critter {
 		
 	//Resolve encounters
 		Iterator<Critter> it1 = population.iterator();
-		boolean testFlag = false;
-		boolean it2Next = true;
-		System.out.println("Here");
-		while(it1.hasNext()&&it2Next)
+		while(it1.hasNext())
 		{
-			if(testFlag)
-				System.out.println("cool");
 			Critter c = it1.next();
 			Iterator<Critter> it2 = population.iterator();
 			boolean alive = true;
@@ -287,17 +288,14 @@ public abstract class Critter {
 				Critter a =it2.next();
 				if((c != a)&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
 				{
-					System.out.println("Theres been an encounter");
-					testFlag=true;
-					alive=false;
 					int cFight=0;
 					int aFight=0;
-					if(c.fight(a.toString()))
+					if(c.fight(a.toString()) && c.energy > 0)
 					{
 						cFight = getRandomInt(100);
 						cFight++;
 					}
-					if(a.fight(c.toString()))
+					if(a.fight(c.toString()) && a.energy > 0)
 					{
 						aFight =getRandomInt(100);
 						aFight++;
@@ -313,6 +311,7 @@ public abstract class Critter {
 						a.energy+=(c.energy/2);
 						//it1.remove()
 						c.energy=0;
+						alive=false;
 					}
 					else
 					{
@@ -321,6 +320,7 @@ public abstract class Critter {
 							a.energy+=(c.energy/2);
 							//it1.remove();
 							c.energy=0;
+							alive=false;
 						}
 						else
 						{
@@ -330,7 +330,6 @@ public abstract class Critter {
 						}	
 					}
 				}
-				it2Next=it2.hasNext();
 			}
 		}
 		
