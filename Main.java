@@ -4,9 +4,9 @@
  * Jonathan Walsh
  * jlw4699
  * 16450
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Tim Yoder
+ * tjy263
+ * 16450
  * Slip days used: <0>
  * Fall 2016
  */
@@ -208,6 +208,7 @@ public class Main {
     	try {
     		java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
     		//TODO: Make this work so we can call Craig.runStats (see PDF/Piazza)
+    		
     		Critter.runStats(instances);
     	}
     	catch (InvalidCritterException e) {

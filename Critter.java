@@ -4,9 +4,9 @@
  * Jonathan Walsh
  * jlw4699
  * 16450
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Tim Yoder
+ * tjy263
+ * 16450
  * Slip days used: <0>
  * Fall 2016
  */
@@ -274,6 +274,7 @@ public abstract class Critter {
 		Iterator<Critter> it1 = population.iterator();
 		boolean testFlag = false;
 		boolean it2Next = true;
+		System.out.println("Here");
 		while(it1.hasNext()&&it2Next)
 		{
 			if(testFlag)
@@ -284,7 +285,7 @@ public abstract class Critter {
 			while(it2.hasNext()&&alive) 
 			{	
 				Critter a =it2.next();
-				if((!c.equals(a))&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
+				if((c != a)&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
 				{
 					System.out.println("Theres been an encounter");
 					testFlag=true;
