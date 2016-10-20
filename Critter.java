@@ -1,4 +1,4 @@
-/* CRITTERS <Critter.java>
+/* CRI/* CRITTERS <Critter.java>
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
  * Jonathan Walsh
@@ -33,10 +33,18 @@ public abstract class Critter {
 	}
 	
 	private static java.util.Random rand = new java.util.Random();
+	/*
+	 * Produces a random integer
+	 * @param max. A maximum integer
+	 * @return a random integer
+	 */
 	public static int getRandomInt(int max) {
 		return rand.nextInt(max);
 	}
-	
+	/*
+	 * Resets random
+	 * @param new_seed. Way to set seed.
+	 */
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
@@ -46,6 +54,10 @@ public abstract class Critter {
 	public String toString() { return ""; }
 	
 	private int energy = 0;
+	/*
+	 * Gets energy
+	 * @return energy
+	 */
 	protected int getEnergy() { return energy; }
 	
 	private int x_coord;
@@ -57,7 +69,15 @@ public abstract class Critter {
 	
 	//Used to determine if a critter has already moved during a time step
 	private boolean hasMoved = false; 
+	public boolean getHasMoved(){return hasMoved;}
+	public void setHasMoved(boolean m){hasMoved=m;}
+	private boolean fighting =false;
+	public void setFighting(boolean m){fighting=true;}
 	
+	/*
+	 * Moves a critter one step in a specified direction
+	 * @params direction. An integer representing the direction to move
+	 */
 	protected final void walk(int direction) {
 	//Update location
 		if (!hasMoved) {
@@ -74,6 +94,10 @@ public abstract class Critter {
 		hasMoved = true;
 	}
 	
+	/*
+	 * Moves a critter two steps in a specified direction
+	 * @params direction. An integer representing the direction to move
+	 */
 	protected final void run(int direction) {
 	//Update location (*2 because we move twice in same direction)
 		if (!hasMoved) {
@@ -89,7 +113,11 @@ public abstract class Critter {
 	//Update hasMoved
 		hasMoved = true;
 	}
-	
+	/*
+	 * Reproduces an offspring form a critter
+	 * @params offspring. The offspring to be added to babies
+	 * @params direction. The direction of which the baby critter will spawn from the parent.
+	 */
 	protected final void reproduce(Critter offspring, int direction) {
 	//Return immediately if parent does not have enough energy to reproduce
 		if (energy < Params.min_reproduce_energy) {
@@ -114,7 +142,7 @@ public abstract class Critter {
 	//Add to babies
 		babies.add(offspring);
 	}
-
+	
 	public abstract void doTimeStep();
 	public abstract boolean fight(String oponent);
 	
@@ -127,6 +155,11 @@ public abstract class Critter {
 	 * an Exception.)
 	 * @param critter_class_name
 	 * @return 
+	 * @throws InvalidCritterException
+	 */
+	/*
+	 * Adds a new critter to population
+	 * @params critter_class_name. The name of the class of critter to be added.
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
@@ -266,7 +299,10 @@ public abstract class Critter {
 	 */
 	public static void clearWorld() {
 	}
-	
+	/*
+	 * Steps through for all critters through time step, encounter resolution, adding babies, and 
+	 * removing dead Critters
+	 */
 	public static void worldTimeStep() {
 		
 	//Do time step for all critters
@@ -275,6 +311,7 @@ public abstract class Critter {
 		//Reset hasMoved after time step
 			c.hasMoved = false;
 		}
+	
 		
 	//Resolve encounters
 		Iterator<Critter> it1 = population.iterator();
@@ -288,6 +325,8 @@ public abstract class Critter {
 				Critter a =it2.next();
 				if((c != a)&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
 				{
+					c.fighting=true;
+					a.fighting=true;
 					int cFight=0;
 					int aFight=0;
 					if(c.fight(a.toString()) && c.energy > 0)
@@ -363,7 +402,9 @@ public abstract class Critter {
 			}
 		}
 	}
-	
+	/*
+	 * Display borders and all Critters currently alive in the world 
+	 */
 	public static void displayWorld() {
 	//First row
 		System.out.print("+");
