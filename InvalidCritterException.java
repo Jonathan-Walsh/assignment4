@@ -1,15 +1,3 @@
-/* CRITTERS <InvalidCritterException.java>
- * EE422C Project 4 submission by
- * Replace <...> with your actual data.
- * Jonathan Walsh
- * jlw4699
- * 16450
- * Tim Yoder
- * tjy263
- * 16450
- * Slip days used: <0>
- * Fall 2016
- */
 package assignment4;
 
 public class InvalidCritterException extends Exception {

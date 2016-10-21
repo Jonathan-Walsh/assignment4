@@ -14,6 +14,8 @@ package assignment4; // cannot be in default package
 import java.util.Scanner;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 /*
@@ -91,15 +93,20 @@ public class Main {
     	
     	while (run) {
     	//Get input
-    		System.out.print("critter> ");
+    		System.out.print("critters> ");
     		String input = kb.nextLine();
     		String[] inputs = input.split(" ");
     	//Determine what the user input
     		if (input.equals("quit")) { 
     			run = false;
     		}
-    		else if (input.equals("show")) {
-    			Critter.displayWorld();
+    		else if (inputs[0].equals("show")) {
+    			if (inputs.length == 1) {
+    				Critter.displayWorld();
+    			}
+    			else {
+    				System.out.println("error processing: " + input);
+    			}
     		}
     		else if (inputs[0].equals("step")) {		
     			stepCommand(input, inputs);
@@ -132,8 +139,13 @@ public class Main {
     	else if (inputs.length == 2) {
     		try {
     			int numSteps = Integer.parseInt(inputs[1]);
-    			for (int i = 0; i < numSteps; i++) {
-    				Critter.worldTimeStep();
+    			if (numSteps > -1) {
+    				for (int i = 0; i < numSteps; i++) {
+        				Critter.worldTimeStep();
+        			}
+    			}
+    			else {
+    				System.out.println("error processing: " + input);
     			}
     		}
     		catch (NumberFormatException e) {
@@ -164,8 +176,13 @@ public class Main {
 		else if (inputs.length == 3) {
 			try {
 				int numCritters = Integer.parseInt(inputs[2]);
-				for (int i = 0; i < numCritters; i++) {
-					Critter.makeCritter(inputs[1]);
+				if (numCritters > -1) {
+					for (int i = 0; i < numCritters; i++) {
+						Critter.makeCritter(inputs[1]);
+					}
+				}
+				else {
+					System.out.println("error processing: " + input);
 				}
 			}
 			catch (InvalidCritterException e2) {
@@ -205,14 +222,32 @@ public class Main {
      * @param inputs : An array of the Strings input the user, should be ["stats",<Critter type>]
      */
     public static void statsCommand(String input, String[] inputs) {
+    	if (inputs.length != 2) {
+    		System.out.println("error processing: " + input);
+    		return;
+    	}
+    	
     	try {
     		java.util.List<Critter> instances = Critter.getInstances(inputs[1]);
-    		//TODO: Make this work so we can call Craig.runStats (see PDF/Piazza)
-    		
-    		Critter.runStats(instances);
-    	}
-    	catch (InvalidCritterException e) {
+    		Class<?> critter_class = Class.forName(myPackage + "." + inputs[1]);
+    		Class<?>[] types = {java.util.List.class};
+			Method runstats = critter_class.getMethod("runStats", java.util.List.class);
+			runstats.invoke(null, instances);
+		}
+		catch (ClassNotFoundException e1){
+			System.out.println("error processing: " + input);
+		}
+		catch (IllegalAccessException e2) {		//Class.newInstance() exception
+			System.out.println("error processing: " + input);
+		}
+    	catch (InvalidCritterException e3) {
     		System.out.println("error processing: " + input);
+    	}
+    	catch (NoSuchMethodException e4) {
+    		System.out.println("error processing: " + input);
+    	}
+    	catch (InvocationTargetException e5) {
+    		System.out.println("error processing: " + input);	
     	}
     }
     

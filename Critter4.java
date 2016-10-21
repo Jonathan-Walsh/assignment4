@@ -12,7 +12,8 @@
  */
 package assignment4;
 
-/*Critter4 (Bob) is peaceful. Instead of making war Bob makes love
+/**
+ * Critter4 (Bob) is peaceful. Instead of making war Bob makes love
  * Bob walks aimlessly looking for food so that he may, someday, reproduce
  * If Bob encounters another Critter, he knows he is not willing to fight
  *   And thus tries to reproduce before (unwillingly) fighting

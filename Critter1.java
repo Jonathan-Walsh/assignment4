@@ -12,7 +12,8 @@
  */
 package assignment4;
 
-/*Critter1(Dave) is angry.
+/**
+ * Critter1(Dave) is angry.
  * He is always looking to fight, and thus never backs down from a
  *     challenge by another Critter
  * Dave also does not have time to reproduce

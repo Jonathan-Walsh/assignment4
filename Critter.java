@@ -1,4 +1,4 @@
-/* CRI/* CRITTERS <Critter.java>
+/* CRITTERS <Critter.java>
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
  * Jonathan Walsh
@@ -33,7 +33,8 @@ public abstract class Critter {
 	}
 	
 	private static java.util.Random rand = new java.util.Random();
-	/*
+	
+	/**
 	 * Produces a random integer
 	 * @param max. A maximum integer
 	 * @return a random integer
@@ -41,7 +42,7 @@ public abstract class Critter {
 	public static int getRandomInt(int max) {
 		return rand.nextInt(max);
 	}
-	/*
+	/**
 	 * Resets random
 	 * @param new_seed. Way to set seed.
 	 */
@@ -54,7 +55,8 @@ public abstract class Critter {
 	public String toString() { return ""; }
 	
 	private int energy = 0;
-	/*
+	
+	/**
 	 * Gets energy
 	 * @return energy
 	 */
@@ -69,24 +71,41 @@ public abstract class Critter {
 	
 	//Used to determine if a critter has already moved during a time step
 	private boolean hasMoved = false; 
-	public boolean getHasMoved(){return hasMoved;}
-	public void setHasMoved(boolean m){hasMoved=m;}
-	private boolean fighting =false;
-	public void setFighting(boolean m){fighting=true;}
+	//Used for specific walking/running during fight()
+	private static boolean fightMode = false;			
 	
-	/*
+	/**
 	 * Moves a critter one step in a specified direction
 	 * @params direction. An integer representing the direction to move
 	 */
 	protected final void walk(int direction) {
-	//Update location
+		int temp_x = x_coord;
+		int temp_y = y_coord;
+	//Update location	
 		if (!hasMoved) {
-			x_coord += x_directions[direction];
-			x_coord += Params.world_width;
-			x_coord %= Params.world_width;
-			y_coord += y_directions[direction];
-			y_coord += Params.world_height;
-			y_coord %= Params.world_height;
+			temp_x += x_directions[direction];
+			temp_x += Params.world_width;
+			temp_x %= Params.world_width;
+			temp_y += y_directions[direction];
+			temp_y += Params.world_height;
+			temp_y %= Params.world_height;
+		}	
+	//Specific to walking during fight
+		if (fightMode) {
+			boolean critterInLocation = false;
+			for (Critter c: population) {
+				if ((c.x_coord == temp_x) && (c.y_coord == temp_y)) {
+					critterInLocation = true;
+				}
+			}
+			if (!critterInLocation) {
+				x_coord = temp_x;
+				y_coord = temp_y;
+			}
+		}
+		else {					//Specific to walking in time step
+			x_coord = temp_x;
+			y_coord = temp_y;
 		}
 	//Update energy
 		energy -= Params.walk_energy_cost;
@@ -94,26 +113,46 @@ public abstract class Critter {
 		hasMoved = true;
 	}
 	
-	/*
+	/**
 	 * Moves a critter two steps in a specified direction
 	 * @params direction. An integer representing the direction to move
 	 */
 	protected final void run(int direction) {
-	//Update location (*2 because we move twice in same direction)
+		int temp_x = x_coord;
+		int temp_y = y_coord;
+	//Update location (*2 because we move twice in same direction)	
 		if (!hasMoved) {
-			x_coord += (x_directions[direction] * 2);
-			x_coord += Params.world_width;
-			x_coord %= Params.world_width;
-			y_coord += (y_directions[direction] * 2);
-			y_coord += Params.world_height;
-			y_coord %= Params.world_height;
+			temp_x += (x_directions[direction] * 2);
+			temp_x += Params.world_width;
+			temp_x %= Params.world_width;
+			temp_y += (y_directions[direction] * 2);
+			temp_y += Params.world_height;
+			temp_y %= Params.world_height;
+		}
+	//Specific to running during fight
+		if (fightMode) {
+			boolean critterInLocation = false;
+			for (Critter c: population) {
+				if ((c.x_coord == temp_x) && (c.y_coord == temp_y)) {
+					critterInLocation = true;
+				}
+			}
+			if (!critterInLocation) {
+				x_coord = temp_x;
+				y_coord = temp_y;
+			}
+		}
+		else {					//Specific to walking in time step
+			x_coord = temp_x;
+			y_coord = temp_y;
 		}
 	//Update energy
 		energy -= Params.run_energy_cost;
 	//Update hasMoved
 		hasMoved = true;
 	}
-	/*
+	
+	/**
 	 * Reproduces an offspring form a critter
 	 * @params offspring. The offspring to be added to babies
 	 * @params direction. The direction of which the baby critter will spawn from the parent.
@@ -155,11 +194,6 @@ public abstract class Critter {
 	 * an Exception.)
 	 * @param critter_class_name
 	 * @return 
-	 * @throws InvalidCritterException
-	 */
-	/*
-	 * Adds a new critter to population
-	 * @params critter_class_name. The name of the class of critter to be added.
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
@@ -298,8 +332,10 @@ public abstract class Critter {
 	 * Clear the world of all critters, dead and alive
 	 */
 	public static void clearWorld() {
+		population.clear();
 	}
-	/*
+	
+	/**
 	 * Steps through for all critters through time step, encounter resolution, adding babies, and 
 	 * removing dead Critters
 	 */
@@ -307,73 +343,74 @@ public abstract class Critter {
 		
 	//Do time step for all critters
 		for (Critter c: population) {
-			c.doTimeStep();
-		//Reset hasMoved after time step
-			c.hasMoved = false;
+			c.doTimeStep();			
 		}
 	
 		
 	//Resolve encounters
 		Iterator<Critter> it1 = population.iterator();
+		fightMode = true;
 		while(it1.hasNext())
 		{
 			Critter c = it1.next();
 			Iterator<Critter> it2 = population.iterator();
-			boolean alive = true;
-			while(it2.hasNext()&&alive) 
+			while(it2.hasNext()&&(c.energy > 0)) 
 			{	
 				Critter a =it2.next();
 				if((c != a)&&(a.x_coord==c.x_coord)&&(a.y_coord==c.y_coord))
 				{
-					c.fighting=true;
-					a.fighting=true;
-					int cFight=0;
-					int aFight=0;
-					if(c.fight(a.toString()) && c.energy > 0)
-					{
-						cFight = getRandomInt(100);
-						cFight++;
-					}
-					if(a.fight(c.toString()) && a.energy > 0)
-					{
-						aFight =getRandomInt(100);
-						aFight++;
-					}
-					if(cFight>aFight)
-					{
-						c.energy+=(a.energy/2);
-						//it2.remove();
-						a.energy=0;
-					}
-					else if(aFight>cFight)
-					{
-						a.energy+=(c.energy/2);
-						//it1.remove()
-						c.energy=0;
-						alive=false;
-					}
-					else
-					{
-						if(aFight>50)
+					boolean cFighting = c.fight(a.toString());
+					boolean aFighting = a.fight(c.toString());
+				//If they are both still in the same location and alive, then fight
+					if ((a.x_coord == c.x_coord) && (a.y_coord == c.y_coord) && (a.energy > 0) && (c.energy > 0)) {		
+						int cFight=0;
+						int aFight=0;
+						if(cFighting)
+						{
+							cFight = getRandomInt(100);
+							cFight++;
+						}
+						if(aFighting)
+						{
+							aFight =getRandomInt(100);
+							aFight++;
+						}
+						if(cFight>aFight)
+						{
+							c.energy+=(a.energy/2);
+							//it2.remove();
+							a.energy=0;
+						}
+						else if(aFight>cFight)
 						{
 							a.energy+=(c.energy/2);
-							//it1.remove();
-							c.energy=0;
-							alive=false;
+							//it1.remove()
+							c.energy=0;						
 						}
 						else
 						{
-							c.energy+=(a.energy);
-							//it2.remove();
-							a.energy=0;
-						}	
+							if(aFight>50)
+							{
+								a.energy+=(c.energy/2);
+								//it1.remove();
+								c.energy=0;
+							}
+							else
+							{
+								c.energy+=(a.energy);
+								//it2.remove();
+								a.energy=0;
+							}
+						}
 					}
 				}
 			}
 		}
+		fightMode = false;
 		
-	//Update rest energy
+	//Update rest energy and reset hasMoved
 		for (Critter c2: population) {
+			c2.hasMoved = false;
 			c2.energy -= Params.rest_energy_cost;
 		}
 		
@@ -381,12 +418,6 @@ public abstract class Critter {
 		population.addAll(babies);
 		babies.clear();
 		
-	//Delete all dead critters
-	//	for (Critter c2: population) {
-	//		if (c2.energy <= 0) {
-	//			population.remove(c2);
-	//		}
-	//	}
 		Iterator<Critter> it3 = population.iterator();
 		while(it3.hasNext())
 		{
@@ -402,7 +433,8 @@ public abstract class Critter {
 			}
 		}
 	}
-	/*
+	
+	/**
 	 * Display borders and all Critters currently alive in the world 
 	 */
 	public static void displayWorld() {

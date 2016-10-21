@@ -12,7 +12,8 @@
  */
 package assignment4;
 
-/*Critter3 (Freddy) is fast. He likes to run.
+/**
+ * Critter3 (Freddy) is fast. He likes to run.
  * He has a set square path, and makes loop after loop on the same path
  * If he encounters another Critter, he stays to fight
  *    so that the Critter is eliminated from his running path

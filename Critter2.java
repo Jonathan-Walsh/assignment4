@@ -12,7 +12,8 @@
  */
 package assignment4;
 
-/*Critter2 (Eddy) is known as the lover.
+/**
+ * Critter2 (Eddy) is known as the lover.
  * He is always looking to reproduce
  * And never wants to fight
  * He even refuses to move because it might lead to more encounters
@@ -37,6 +38,5 @@ public class Critter2 extends Critter
 	{
 		Critter2 baby = new Critter2();
 		reproduce(baby, 6);
-	
 	}
 }
